@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Payment UI</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f7f8f9; }
+        #payment-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { margin-top: 0; color: #32325d; }
+        #payment-element { margin-bottom: 24px; }
+        button { background: #5469d4; color: #ffffff; border-radius: 4px; border: 0; padding: 12px 16px; font-size: 16px; font-weight: 600; cursor: pointer; display: block; width: 100%; box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07); transition: all 0.2s ease; }
+        button:hover { filter: contrast(115%); }
+        button:disabled { opacity: 0.5; cursor: default; }
+        #error-message { color: rgb(105, 115, 134); font-size: 16px; line-height: 20px; margin-top: 12px; text-align: center; }
+        .input-group { margin-bottom: 1rem; }
+        input { width: 100%; padding: 10px; border: 1px solid #e6e6e6; border-radius: 4px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div id="payment-container">
+        <h2>Complete Payment</h2>
+        <div class="input-group">
+            <label>Connected Account ID (Optional):</label>
+            <input type="text" id="account-id" placeholder="acct_...">
+        </div>
+        <div class="input-group">
+            <label>Amount (in cents):</label>
+            <input type="number" id="amount" value="2000">
+        </div>
+        <button id="init-button">Initialize Payment</button>
+
+        <form id="payment-form" style="display: none; margin-top: 20px;">
+            <div id="payment-element"></div>
+            <button id="submit">Pay Now</button>
+            <div id="error-message"></div>
+        </form>
+    </div>
+
+    <script>
+        const stripePublicKey = "{{ public_key }}";
+        let stripe;
+        let elements;
+
+        document.getElementById('init-button').addEventListener('click', async () => {
+            const accountId = document.getElementById('account-id').value;
+            const amount = document.getElementById('amount').value;
+
+            // 1. Create PaymentIntent on the server
+            const response = await fetch('/create-payment-intent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount, account_id: accountId })
+            });
+            const { clientSecret, error } = await response.json();
+
+            if (error) {
+                alert(error);
+                return;
+            }
+
+            // 2. Initialize Stripe.js
+            const stripeOptions = accountId ? { stripeAccount: accountId } : {};
+            stripe = Stripe(stripePublicKey, stripeOptions);
+
+            // 3. Create and mount Elements
+            elements = stripe.elements({ clientSecret });
+            const paymentElement = elements.create('payment');
+            paymentElement.mount('#payment-element');
+
+            // Show the form
+            document.getElementById('payment-form').style.display = 'block';
+            document.getElementById('init-button').style.display = 'none';
+        });
+
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submit');
+            submitBtn.disabled = true;
+
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin + '/success',
+                },
+            });
+
+            if (error) {
+                const messageContainer = document.querySelector('#error-message');
+                messageContainer.textContent = error.message;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Connect SaaS Platform</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #f43f5e;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #6366f1, #f43f5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .onboarding-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .radio-group {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .radio-option:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        input[type="radio"] {
+            accent-color: var(--primary);
+            width: 1.2rem;
+            height: 1.2rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e3e9;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: scale(1.02);
+        }
+
+        button.secondary {
+            background: var(--accent);
+        }
+
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .link-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .link-list a {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .link-list a:hover {
+            color: var(--primary-hover);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-platform {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            margin-top: 3rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.875rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Stripe Gate6 POC</h1>
+            <p class="subtitle">This is stripe connect POC for Pool brain</p>
+        </header>
+
+        <div class="card">
+            <h2>🚀 Quick Onboarding</h2>
+            <form action="/onboard" method="GET" class="onboarding-form">
+                <p>Ready to collect payments? Enter your email and select setup:</p>
+                <input type="email" name="email" placeholder="Company Email (required for DB)" required>
+                <div class="radio-group" style="margin-top: 1rem;">
+                    <label class="radio-option">
+                        <input type="radio" name="account_type" value="standard" checked>
+                        <span><strong>Standard:</strong> I already have a Stripe account</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="account_type" value="express">
+                        <span><strong>Express:</strong> Create a new account for me</span>
+                    </label>
+                </div>
+                <button type="submit" style="margin-top: 1rem;">Connect with Stripe →</button>
+            </form>
+        </div>
+
+        <div class="section-title">Developer Testing Suite</div>
+
+        <div class="grid">
+            <!-- Platform Tools -->
+            <div class="card">
+                <h2>🏢 Platform Tools <span class="badge badge-platform">Core</span></h2>
+                <ul class="link-list">
+                    <li><a href="/checkout">✨ Default Checkout Session</a></li>
+                    <li><a href="/invoice?email=test@example.com">📄 Generate Demo Invoice</a></li>
+                    <li><a href="/custom-payment">🎨 Custom Payment UI (Elements)</a></li>
+                </ul>
+            </div>
+
+            <!-- Connect Testing -->
+            <div class="card">
+                <h2>🔗 Connect Account Tools</h2>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Test features for a
+                    specific connected company.</p>
+
+                <form action="/dashboard" method="GET" style="margin-bottom: 1.5rem;">
+                    <input type="text" name="account_id" placeholder="Enter acct_..." required>
+                    <button type="submit" style="margin-top: 0.5rem; width: 100%; background: var(--success);">Open
+                        Dashboard Link</button>
+                </form>
+
+                <form action="/checkout" method="GET" style="margin-bottom: 1rem;">
+                    <input type="email" name="email" placeholder="Customer Email" style="margin-bottom: 0.5rem;" required>
+                    <input type="text" name="account_id" placeholder="Account ID (acct_...)" required>
+                    <button type="submit" style="margin-top: 0.5rem; width: 100%;">Test Connect Checkout</button>
+                </form>
+
+                <form action="/invoice" method="GET">
+                    <input type="email" name="email" placeholder="Customer Email" style="margin-bottom: 0.5rem;"
+                        required>
+                    <input type="text" name="account_id" placeholder="Account ID (acct_...)" required>
+                    <button type="submit" class="secondary" style="margin-top: 0.5rem; width: 100%;">Generate Connect
+                        Invoice</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="section-title" style="color: #64748b; border-color: #e2e8f0;">Account Management</div>
+
+        <div class="card" style="border: 1px solid #e2e8f0; background: #f8fafc;">
+            <h2 style="color: #1e293b;">🔗 Disconnect Account</h2>
+            <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1rem;">This will remove the connection between
+                this account and your platform.</p>
+            <form action="/disconnect" method="POST">
+                <input type="text" name="account_id" placeholder="Enter acct_id to disconnect" required>
+                <button type="submit" style="margin-top: 1rem; width: 100%; background: #64748b;">Disconnect
+                    Account</button>
+            </form>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Yeeld Pay. Powered by Stripe Connect.
+        </div>
+    </div>
+</body>
+
+</html>
