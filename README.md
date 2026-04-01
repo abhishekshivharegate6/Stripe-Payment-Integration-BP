@@ -1,4 +1,4 @@
-# Yeeld Pay - Stripe Connect SaaS POC
+# Stripe Connect SaaS POC - ABHISHEK SHIVHARE
 
 A professional, modular Flask-based SaaS infrastructure designed for multi-tenant payment processing using Stripe Connect. This platform allows multiple companies to onboard, manage customers, and collect payments directly.
 
